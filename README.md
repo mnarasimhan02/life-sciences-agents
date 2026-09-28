@@ -65,10 +65,13 @@ Investigates what happened to a clinical trial and, separately, what happened to
 
 **Original product foundation:** [WhyDidThisTrialFail](https://github.com/mnarasimhan02/WhyDidThisTrialFail)
 
-**Tools and sources**
+**Available in the current runtime**
 
 - ClinicalTrials.gov API and record history
 - PubMed E-utilities
+
+**Planned evidence-tool migration from the original product**
+
 - SEC EDGAR
 - FDA and openFDA
 - Public EU trial identifiers when available
@@ -125,15 +128,16 @@ Each runnable agent will use a consistent layout:
 ```text
 agents/<agent-name>/
 ├── README.md
-├── agent.py
-├── models.py
-├── tools/
-├── prompts/
+├── package.json or pyproject.toml
+├── src/
+│   ├── agent
+│   ├── planner
+│   ├── state
+│   └── tools/
 ├── tests/
 ├── evals/
 ├── examples/
-├── .env.example
-└── pyproject.toml
+└── .env.example
 ```
 
 ## Shared infrastructure
