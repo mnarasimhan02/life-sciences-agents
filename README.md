@@ -61,7 +61,9 @@ Investigates what happened to a clinical trial and, separately, what happened to
 
 **Goal:** Produce a compact evidence audit rather than a speculative failure narrative.
 
-**Current foundation:** [WhyDidThisTrialFail](https://github.com/mnarasimhan02/WhyDidThisTrialFail)
+**Runnable implementation:** [agents/trial-evidence-agent](agents/trial-evidence-agent)
+
+**Original product foundation:** [WhyDidThisTrialFail](https://github.com/mnarasimhan02/WhyDidThisTrialFail)
 
 **Tools and sources**
 
@@ -186,8 +188,8 @@ Every agent is expected to ship with a small public benchmark before it is marke
 ## Roadmap
 
 - [x] Establish the portfolio and true-agent quality standard
-- [ ] Extract reusable evidence and tracing contracts from Trial Evidence Agent
-- [ ] Add a dynamic planner and bounded investigation loop
+- [x] Extract initial evidence, state, budget, and tracing contracts from Trial Evidence Agent
+- [x] Add a dynamic planner and bounded investigation loop
 - [ ] Publish the first 25-case Trial Evidence benchmark
 - [ ] Add claim-level citation verification and adversarial tests
 - [ ] Release Regulatory Precedent Agent
@@ -197,18 +199,16 @@ Every agent is expected to ship with a small public benchmark before it is marke
 
 ## Quick start
 
-The common runtime is under active development. The target interface is:
+Agent 01 requires Node.js 22.13 or newer and uses public APIs without an API key:
 
 ```bash
 git clone https://github.com/mnarasimhan02/life-sciences-agents.git
 cd life-sciences-agents
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
-life-sciences-agent run trial-evidence --input NCT02569398
+cd agents/trial-evidence-agent
+npm install
+npm test
+npm run investigate -- NCT02569398
 ```
-
-The command above is the intended public interface and will be marked available when Agent 01 is migrated. Until then, use the existing [WhyDidThisTrialFail](https://github.com/mnarasimhan02/WhyDidThisTrialFail) application.
 
 ## Principles
 
