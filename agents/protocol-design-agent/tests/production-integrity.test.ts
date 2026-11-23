@@ -49,6 +49,18 @@ test("production client contains no embedded trial records, publications, counts
   for (const pattern of forbidden) assert.doesNotMatch(client, pattern);
 });
 
+test("review workspace offers only the cited PDF export", async () => {
+  const html = await readFile(new URL("../public/index.html", import.meta.url), "utf8");
+  const client = await readFile(new URL("../public/v5.js", import.meta.url), "utf8");
+  assert.match(html, /id="export-pdf">Export PDF/);
+  assert.doesNotMatch(html, /Export JSON|Export Markdown|export-json|export-md/);
+  assert.doesNotMatch(html, /fu-input|fu-btn|rs-btn|Start over/);
+  assert.match(client, /createReviewPdf/);
+  assert.match(client, /CITED SOURCES/);
+  assert.match(client, /source\.url/);
+  assert.doesNotMatch(client, /protocol-review-.*\.(?:json|md)/);
+});
+
 test("evidence sources do not expose a synthetic relevance score", async () => {
   const analyzer = await readFile(new URL("../src/analyzer.ts", import.meta.url), "utf8");
   const types = await readFile(new URL("../src/types.ts", import.meta.url), "utf8");
