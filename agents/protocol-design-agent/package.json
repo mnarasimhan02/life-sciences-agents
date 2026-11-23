@@ -10,6 +10,8 @@
     "start": "node --experimental-strip-types src/server.ts",
     "review": "node --experimental-strip-types src/cli.ts",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test:live-tools": "RUN_LIVE_TESTS=1 node --experimental-strip-types --test tests/production-integrity.test.ts",
+    "test:e2e:model": "RUN_MODEL_E2E=1 node --experimental-strip-types --test tests/model-e2e.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
