@@ -3,13 +3,13 @@ const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&":
 const EXAMPLE = "Planning a randomized phase 2 trial of a PD-1 inhibitor versus docetaxel in adults with previously treated advanced non-small cell lung cancer. The primary endpoint is progression-free survival. We plan to enroll 180 participants and follow them for 52 weeks.";
 
 const FIELDS = [
-  { key: "condition", label: "Condition", question: "Which condition is this study in?", options: ["Non-small cell lung cancer", "Type 2 diabetes", "Breast cancer"] },
+  { key: "condition", label: "Condition", question: "Which condition is this study in?", options: [] },
   { key: "phase", label: "Phase", question: "Which trial phase is it?", options: ["Phase 1", "Phase 2", "Phase 3"] },
   { key: "intervention", label: "Intervention", question: "What is being tested?", options: [] },
-  { key: "primaryEndpoint", label: "Endpoint", question: "What is the proposed primary endpoint?", options: ["Objective response rate", "Overall survival", "Progression-free survival"] },
-  { key: "comparator", label: "Comparator", question: "What comparator or control design is planned?", options: ["Single-arm", "Placebo", "Standard of care"] },
-  { key: "enrollmentTarget", label: "Enrollment", question: "How many participants do you plan to enroll?", options: ["60", "120", "300"] },
-  { key: "durationWeeks", label: "Duration", question: "How long does the study run, in weeks?", options: ["24", "52", "104"] },
+  { key: "primaryEndpoint", label: "Endpoint", question: "What is the proposed primary endpoint?", options: [] },
+  { key: "comparator", label: "Comparator", question: "What comparator or control design is planned?", options: [] },
+  { key: "enrollmentTarget", label: "Enrollment", question: "How many participants do you plan to enroll?", options: [] },
+  { key: "durationWeeks", label: "Duration", question: "How long does the study run, in weeks?", options: [] },
 ];
 const STAGES = ["Read description", "Clarify details", "Search sources", "Verify claims", "Review ready"];
 const ICON = { you: "↑", read: "◎", ask: "?", think: "⟳", tool: "▶", obs: "●", rep: "↺", done: "✓" };
@@ -184,7 +184,7 @@ function renderReview(payload) {
   $("bench-stat").textContent = `${trials.length} comparators`;
   $("bench-note").textContent = enrollments.length ? `Enrollment median ${enrollmentMedian}; range ${Math.min(...enrollments)}–${Math.max(...enrollments)}. These are precedents, not a power calculation.` : "Enrollment was not available for benchmarking.";
   const proposed = { nctId: "Proposed", phase: [review.concept.phase], enrollment: review.concept.enrollmentTarget ?? "—", allocation: review.concept.comparator ?? "—", primaryOutcomes: [{ measure: review.concept.primaryEndpoint ?? "—" }], status: "Concept" };
-  $("bench-body").innerHTML = [proposed, ...trials.slice(0, 30)].map((trial, index) => `<tr class="${index === 0 ? "proposed" : ""}"><td>${trial.nctId.startsWith("NCT") ? `<a href="${esc(trial.url)}" target="_blank" rel="noopener">${esc(trial.nctId)}</a>` : esc(trial.nctId)}</td><td>${esc((trial.phase ?? []).join(", ") || "—")}</td><td>${esc(trial.enrollment ?? "—")}</td><td>${esc(trial.allocation ?? "—")}</td><td>${esc(trial.primaryOutcomes?.[0]?.measure ?? "—")}</td><td>${esc(trial.status)}</td></tr>`).join("");
+  $("bench-body").innerHTML = [proposed, ...trials].map((trial, index) => `<tr class="${index === 0 ? "proposed" : ""}"><td>${trial.nctId.startsWith("NCT") ? `<a href="${esc(trial.url)}" target="_blank" rel="noopener">${esc(trial.nctId)}</a>` : esc(trial.nctId)}</td><td>${esc((trial.phase ?? []).join(", ") || "—")}</td><td>${esc(trial.enrollment ?? "—")}</td><td>${esc(trial.allocation ?? "—")}</td><td>${esc(trial.primaryOutcomes?.[0]?.measure ?? "—")}</td><td>${esc(trial.status)}</td></tr>`).join("");
 
   const coverage = review.sourceCoverage.map((source) => `${source.source}: ${source.status}${source.status === "completed" ? ` (${source.records})` : ""}`).join(" · ");
   $("ev-banner").textContent = `Live evidence only. ${coverage}. Planned source families are not counted.`;
