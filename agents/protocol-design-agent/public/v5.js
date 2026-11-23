@@ -195,6 +195,9 @@ function renderReview(payload) {
   $("sf-rows").innerHTML = completed.map((event) => `<div class="sf-row"><code>${esc(event.tool)}</code><span>${esc(event.data?.query ?? "Query preserved in execution trace")}</span><span>${esc(event.timestamp)}</span><b>${esc(event.data?.trialCount || event.data?.literatureCount || 0)}</b></div>`).join("") || "<p>No completed search was recorded.</p>";
   $("sf-note").textContent = "Counts come from this run. No deduplication or exclusion count is claimed unless the execution trace records it.";
 
+  $("activity-log").innerHTML = $("log").innerHTML;
+  $("workspace").classList.add("review-mode");
+  selectPane("p-review");
   $("review-panel").classList.remove("empty"); $("rp-empty").hidden = true; $("rp-main").hidden = false; $("rp-main").style.display = "flex";
   document.querySelectorAll("[data-cite]").forEach((button) => { button.onclick = () => highlightEvidence(button.dataset.cite); });
 }
@@ -213,7 +216,7 @@ async function start(text) {
   const currentRun = ++runId;
   originalText = text;
   fields = {};
-  $("landing").hidden = true; $("workspace").hidden = false; $("log").innerHTML = '<div class="trace-empty" id="trace-empty"><div class="te-icon">⚡</div><div>Agent trace will appear here</div></div>';
+  $("landing").hidden = true; $("workspace").hidden = false; $("workspace").classList.remove("review-mode"); $("log").innerHTML = '<div class="trace-empty" id="trace-empty"><div class="te-icon">⚡</div><div>Agent trace will appear here</div></div>';
   $("c-src").textContent = "0"; $("c-scr").textContent = "0"; $("c-kep").textContent = "0"; $("c-el").textContent = "0.0s";
   $("rp-main").hidden = true; $("rp-empty").hidden = false; $("review-panel").classList.add("empty");
   setStage(0); renderFields(); startClock();
@@ -249,7 +252,7 @@ document.querySelectorAll(".rp-tab").forEach((tab) => { tab.onclick = () => sele
 $("start-btn").onclick = () => { const text = $("txt").value.trim(); if (text) start(text); else $("txt").focus(); };
 $("ex-btn").onclick = () => { $("txt").value = EXAMPLE; $("txt").focus(); };
 $("fu-btn").onclick = () => { const addition = $("fu-input").value.trim(); if (addition) start(`${originalText}\n${addition}`); };
-$("rs-btn").onclick = () => { runId += 1; stopClock(); $("workspace").hidden = true; $("landing").hidden = false; $("txt").value = ""; $("run-title").textContent = ""; };
+$("rs-btn").onclick = () => { runId += 1; stopClock(); $("workspace").classList.remove("review-mode"); $("workspace").hidden = true; $("landing").hidden = false; $("txt").value = ""; $("run-title").textContent = ""; };
 $("calc-btn").onclick = () => {
   const p0 = Number($("p0").value), p1 = Number($("p1").value), alpha = Number($("alpha").value), power = Number($("power").value);
   if (!(p0 > 0 && p0 < 1 && p1 > 0 && p1 < 1 && p0 !== p1 && alpha > 0 && alpha < 1 && power > .5 && power < 1)) { $("calc-result").textContent = "Enter valid probabilities."; return; }
