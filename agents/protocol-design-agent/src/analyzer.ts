@@ -37,7 +37,6 @@ function evidenceLibrary(state: Readonly<AgentState>): EvidenceSource[] {
     ].join(" "),
     url: trial.url,
     identifier: trial.nctId,
-    relevance: Math.max(60, 96 - index * 3),
   }));
   const literature: EvidenceSource[] = state.literature.slice(0, 10).map((record, index) => ({
     id: `L${index + 1}`,
@@ -46,7 +45,6 @@ function evidenceLibrary(state: Readonly<AgentState>): EvidenceSource[] {
     passage: record.abstract ?? `Citation metadata: ${record.journal ?? "journal not reported"}, ${record.publicationDate ?? "date not reported"}. Abstract was unavailable from PubMed.`,
     url: record.url,
     identifier: `PMID ${record.pmid}`,
-    relevance: Math.max(55, 92 - index * 4),
   }));
   return [...registry, ...literature];
 }
