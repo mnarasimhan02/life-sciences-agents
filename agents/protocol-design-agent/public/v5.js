@@ -149,9 +149,92 @@ function renderReviewer(role) {
   document.querySelectorAll("#reviewer-tabs button").forEach((button) => button.classList.toggle("on", button.dataset.role === role));
   $("reviewer-questions").innerHTML = REVIEWER_QUESTIONS[role].map((question) => `<li>${esc(question)}</li>`).join("");
 }
-function download(name, body, type) {
-  const url = URL.createObjectURL(new Blob([body], { type }));
-  const link = document.createElement("a"); link.href = url; link.download = name; link.click(); URL.revokeObjectURL(url);
+function pdfText(value) {
+  return String(value ?? "")
+    .replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"')
+    .replace(/[\u2013\u2014]/g, "-").replace(/\u2026/g, "...")
+    .normalize("NFKD").replace(/[^\x20-\x7E]/g, "?");
+}
+function wrapPdfText(value, width) {
+  const words = pdfText(value).split(/\s+/).filter(Boolean);
+  const lines = [];
+  let line = "";
+  for (const word of words) {
+    const candidate = line ? `${line} ${word}` : word;
+    if (candidate.length <= width) line = candidate;
+    else { if (line) lines.push(line); line = word; }
+  }
+  if (line) lines.push(line);
+  return lines.length ? lines : [""];
+}
+function pdfEscape(value) { return pdfText(value).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)"); }
+function createReviewPdf(review) {
+  const referencedIds = new Set([
+    ...(review.bottomLine.sourceIds ?? []),
+    ...review.designChecks.flatMap((check) => check.sourceIds ?? []),
+  ]);
+  const sources = review.evidenceLibrary.filter((source) => referencedIds.has(source.id));
+  const blocks = [
+    { text: "Protocol Design Review", size: 20, bold: true, after: 12 },
+    { text: [review.concept.condition, review.concept.phase, review.concept.primaryEndpoint].filter(Boolean).join(" | "), size: 10, after: 14 },
+    { text: "SUMMARY", size: 11, bold: true, after: 6 },
+    { text: `${review.bottomLine.text} ${(review.bottomLine.sourceIds ?? []).map((id) => `[${id}]`).join(" ")}`, size: 11, after: 14 },
+    { text: "DESIGN FINDINGS", size: 11, bold: true, after: 6 },
+    ...review.designChecks.flatMap((check) => [
+      { text: `${check.choice} - ${check.verdict}`, size: 10, bold: true, after: 3 },
+      { text: `${check.text} ${(check.sourceIds ?? []).map((id) => `[${id}]`).join(" ")}`, size: 10, indent: 10, after: 8 },
+    ]),
+    { text: "EVIDENCE GAPS", size: 11, bold: true, after: 6 },
+    ...(review.evidenceGaps.length ? review.evidenceGaps : ["No material gap was recorded in this bounded run."]).map((gap) => ({ text: `- ${gap}`, size: 10, after: 5 })),
+    { text: "CITED SOURCES", size: 11, bold: true, after: 6 },
+    ...sources.flatMap((source) => [
+      { text: `[${source.id}] ${source.title}`, size: 10, bold: true, after: 3 },
+      { text: source.passage, size: 9, indent: 10, after: 3 },
+      { text: source.url, size: 8, indent: 10, after: 9 },
+    ]),
+    { text: "Decision support only. This review does not create or approve a protocol and requires qualified clinical, statistical, regulatory and operational review.", size: 8, after: 0 },
+  ];
+  const pages = [[]];
+  let y = 744;
+  for (const block of blocks) {
+    const size = block.size ?? 10;
+    const indent = block.indent ?? 0;
+    const maxChars = Math.max(28, Math.floor((504 - indent) / (size * .52)));
+    const lines = wrapPdfText(block.text, maxChars);
+    const needed = lines.length * (size + 4) + (block.after ?? 0);
+    if (y - needed < 52) { pages.push([]); y = 744; }
+    for (const line of lines) {
+      pages.at(-1).push({ text: line, x: 54 + indent, y, size, bold: block.bold });
+      y -= size + 4;
+    }
+    y -= block.after ?? 0;
+  }
+  const objects = ["", "", "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>", "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>"];
+  const pageIds = [];
+  pages.forEach((page) => {
+    const stream = page.map((line) => `BT /${line.bold ? "F2" : "F1"} ${line.size} Tf ${line.x} ${line.y} Td (${pdfEscape(line.text)}) Tj ET`).join("\n");
+    const contentId = objects.push(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+    const pageId = objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentId} 0 R >>`);
+    pageIds.push(pageId);
+  });
+  objects[0] = "<< /Type /Catalog /Pages 2 0 R >>";
+  objects[1] = `<< /Type /Pages /Kids [${pageIds.map((id) => `${id} 0 R`).join(" ")}] /Count ${pageIds.length} >>`;
+  let pdf = "%PDF-1.4\n";
+  const offsets = [0];
+  objects.forEach((object, index) => { offsets.push(pdf.length); pdf += `${index + 1} 0 obj\n${object}\nendobj\n`; });
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n${offsets.slice(1).map((offset) => `${String(offset).padStart(10, "0")} 00000 n `).join("\n")}\ntrailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+  return new Blob([pdf], { type: "application/pdf" });
+}
+function exportReviewPdf() {
+  if (!lastPayload) return;
+  const blob = createReviewPdf(lastPayload.review);
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `protocol-design-review-${lastPayload.review.runId}.pdf`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function renderReview(payload) {
@@ -251,8 +334,6 @@ async function start(text) {
 document.querySelectorAll(".rp-tab").forEach((tab) => { tab.onclick = () => selectPane(tab.dataset.pane); });
 $("start-btn").onclick = () => { const text = $("txt").value.trim(); if (text) start(text); else $("txt").focus(); };
 $("ex-btn").onclick = () => { $("txt").value = EXAMPLE; $("txt").focus(); };
-$("fu-btn").onclick = () => { const addition = $("fu-input").value.trim(); if (addition) start(`${originalText}\n${addition}`); };
-$("rs-btn").onclick = () => { runId += 1; stopClock(); $("workspace").classList.remove("review-mode"); $("workspace").hidden = true; $("landing").hidden = false; $("txt").value = ""; $("run-title").textContent = ""; };
 $("calc-btn").onclick = () => {
   const p0 = Number($("p0").value), p1 = Number($("p1").value), alpha = Number($("alpha").value), power = Number($("power").value);
   if (!(p0 > 0 && p0 < 1 && p1 > 0 && p1 < 1 && p0 !== p1 && alpha > 0 && alpha < 1 && power > .5 && power < 1)) { $("calc-result").textContent = "Enter valid probabilities."; return; }
@@ -261,17 +342,7 @@ $("calc-btn").onclick = () => {
   const sampleSize = Math.ceil(((zAlpha * Math.sqrt(p0 * (1 - p0)) + zPower * Math.sqrt(p1 * (1 - p1))) ** 2) / ((p1 - p0) ** 2));
   $("calc-result").textContent = `Exploratory n = ${sampleSize}. One-sample proportion normal approximation; no attrition adjustment. Validate with a statistician.`;
 };
-$("export-json").onclick = () => {
-  if (!lastPayload) return;
-  const excluded = [...document.querySelectorAll(".ev-card.excluded")].map((card) => card.dataset.source);
-  download(`protocol-review-${lastPayload.review.runId}.json`, JSON.stringify({ ...lastPayload, expertFeedback: { irrelevantSourceIds: excluded }, exportedAt: new Date().toISOString() }, null, 2), "application/json");
-};
-$("export-md").onclick = () => {
-  if (!lastPayload) return;
-  const review = lastPayload.review;
-  const markdown = [`# Protocol Design Agent review`, "", review.bottomLine.text, "", "## Design checks", ...review.designChecks.map((check) => `- **${check.choice}:** ${check.text} [${check.sourceIds.join(", ") || "no evidence"}]`), "", "## Evidence gaps", ...review.evidenceGaps.map((gap) => `- ${gap}`)].join("\n");
-  download(`protocol-review-${review.runId}.md`, markdown, "text/markdown");
-};
+$("export-pdf").onclick = exportReviewPdf;
 
 fetch("/api/health").then((response) => response.json()).then((health) => {
   document.querySelector("#topbar .badge").innerHTML = `<span class="dot"></span>${health.agentModeAvailable ? `Agent ready · ${esc(health.model)}` : "Agent unavailable · configure OPENAI_API_KEY"}`;
