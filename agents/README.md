@@ -1,11 +1,13 @@
 # Agents
 
-Runnable agents will live in this directory. Agent 01 will be migrated from the existing `WhyDidThisTrialFail` project after the shared execution and evidence contracts are established.
+Runnable agents live in this directory.
+
+## Available
+
+1. [`trial-evidence-agent`](trial-evidence-agent) — bounded investigation loop with ClinicalTrials.gov and PubMed tools, explicit state, replanning, budgets, abstention, and machine-readable traces.
 
 Planned order:
 
-1. `trial-evidence-agent`
-2. `regulatory-precedent-agent`
-3. `protocol-feasibility-agent`
-4. `safety-signal-scout`
-
+1. `regulatory-precedent-agent`
+2. `protocol-feasibility-agent`
+3. `safety-signal-scout`
