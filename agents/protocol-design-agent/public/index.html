@@ -47,23 +47,13 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 #topbar .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
 
 /* ── LANDING ── */
-#landing { flex: 1; overflow-y: auto; background:linear-gradient(90deg,#f8fafc 0,#f8fafc 50%,#f3f6fa 50%,#f3f6fa 100%); }
-.land-inner { width: 100%; max-width: 1180px; margin:0 auto; padding:56px 28px 42px; }
-.landing-grid { display:grid; grid-template-columns:minmax(0,.82fr) minmax(520px,1.18fr); gap:64px; align-items:start; }
+#landing { flex:1;min-height:0;overflow:hidden;background:linear-gradient(90deg,#f8fafc 0,#f8fafc 50%,#f3f6fa 50%,#f3f6fa 100%);display:flex;align-items:center }
+.land-inner { width:100%;max-width:1120px;margin:0 auto;padding:28px }
+.landing-grid { display:grid;grid-template-columns:minmax(0,.78fr) minmax(480px,1.22fr);gap:72px;align-items:center }
 .overline { color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:14px }
 .land-inner h1 { font-size:clamp(38px,4.3vw,58px);font-weight:700;line-height:1.06;letter-spacing:-.045em;margin-bottom:18px;max-width:10ch }
-.land-lead { color:var(--mute);font-size:17px;line-height:1.7;max-width:46ch;margin-bottom:32px }
-.scope-summary { background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:0 0 28px;overflow:hidden }
-.scope-row { display:grid;grid-template-columns:92px 1fr;gap:12px;padding:11px 13px;border-bottom:1px solid var(--border-soft);font-size:12.5px;line-height:1.5 }
-.scope-row:last-child { border-bottom:0 }.scope-row b { color:var(--ink);font-size:11px;letter-spacing:.04em;text-transform:uppercase }.scope-row span { color:var(--mute) }
-.scope-row.boundary { background:var(--amber-bg) }.scope-row.boundary b,.scope-row.boundary span { color:#92400e }
-.design-scaffold { border-top:1px solid var(--border);padding-top:22px }
-.design-scaffold h2 { font-size:14px;margin-bottom:5px }
-.design-scaffold>p { color:var(--mute);font-size:13px;margin-bottom:15px }
-.scaffold-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px }
-.scaffold-item { background:rgba(255,255,255,.72);border:1px solid var(--border);border-radius:8px;padding:9px 11px }
-.scaffold-item b { display:block;font-size:12px;margin-bottom:2px }
-.scaffold-item span { color:var(--mute);font-size:12px;line-height:1.35 }
+.land-lead { color:var(--mute);font-size:17px;line-height:1.7;max-width:43ch;margin-bottom:22px }
+.land-boundary { border-left:3px solid var(--accent);padding:3px 0 3px 13px;color:var(--mute);font-size:13px;line-height:1.55;max-width:42ch }
 .entry-panel { background:var(--surface);border:1px solid #d8dee8;border-radius:14px;box-shadow:0 16px 42px rgba(15,23,42,.08);overflow:hidden }
 .entry-head { padding:20px 22px 14px;border-bottom:1px solid var(--border-soft) }
 .entry-head h2 { font-size:18px;letter-spacing:-.015em;margin-bottom:4px }
@@ -84,11 +74,14 @@ button:hover { border-color: #adb5bd; }
 .btn-ghost { border: 0; background: 0; color: var(--accent); padding: 7px 4px; }
 .coverage-note { padding:14px 20px;background:#fafbfc;border-top:1px solid var(--border-soft) }
 .coverage-note h3 { font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-bottom:8px }
-.workflow { display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:44px;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden }
-.workflow-step { padding:20px 22px;border-right:1px solid var(--border) }.workflow-step:last-child{border:0}
-.workflow-step .number { color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:9px }
-.workflow-step h3 { font-size:14px;margin-bottom:5px }.workflow-step p { color:var(--mute);font-size:12px;line-height:1.55 }
-.deliverable { margin-top:18px;color:var(--mute);font-size:12px;text-align:center }.deliverable b{color:var(--ink)}
+.help-btn { color:var(--accent);font-weight:600;background:transparent;padding:6px 10px }
+.help-dialog { width:min(760px,calc(100vw - 32px));max-height:min(720px,calc(100vh - 48px));margin:auto;border:0;border-radius:14px;box-shadow:0 24px 80px rgba(15,23,42,.24);padding:0;color:var(--ink) }
+.help-dialog::backdrop { background:rgba(15,23,42,.42) }
+.help-head { display:flex;align-items:flex-start;gap:16px;padding:22px 24px 16px;border-bottom:1px solid var(--border) }.help-head>div{flex:1}.help-head h2{font-size:20px;margin-bottom:3px}.help-head p{font-size:13px;color:var(--mute)}
+.help-close { padding:5px 10px;background:var(--bg) }
+.help-body { padding:20px 24px 24px;overflow:auto;max-height:calc(100vh - 160px) }.help-section{margin-bottom:22px}.help-section:last-child{margin:0}.help-section h3{font-size:13px;margin-bottom:9px}.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.help-item{border:1px solid var(--border);border-radius:8px;padding:10px 12px}.help-item b{display:block;font-size:12px;margin-bottom:2px}.help-item span{display:block;font-size:12px;line-height:1.45;color:var(--mute)}
+.help-steps{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:9px;overflow:hidden}.help-step{padding:12px;border-right:1px solid var(--border)}.help-step:last-child{border:0}.help-step b{display:block;color:var(--accent);font-size:10px;letter-spacing:.06em;margin-bottom:4px}.help-step span{font-size:11.5px;line-height:1.45;color:var(--mute)}
+.help-note{background:var(--amber-bg);border:1px solid #fde68a;border-radius:8px;padding:10px 12px;color:#92400e;font-size:12px;line-height:1.5}
 
 /* ── WORKSPACE ── */
 #workspace { flex: 1; display: grid; grid-template-columns: 260px minmax(0,1fr); overflow: hidden; }
@@ -274,8 +267,8 @@ details.raw summary { cursor: pointer; }
 @keyframes blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media (max-width: 1050px) { #workspace { grid-template-columns: 230px minmax(0,1fr); } .rp-pane { padding:22px 24px 40px } }
-@media (max-width: 850px) { #landing{background:var(--bg)} .landing-grid{grid-template-columns:1fr;gap:34px}.land-inner{padding-top:36px}.land-inner h1{max-width:14ch}.entry-panel{box-shadow:var(--shadow-md)}.workflow{grid-template-columns:1fr 1fr}.workflow-step:nth-child(2){border-right:0}.workflow-step{border-bottom:1px solid var(--border)} }
-@media (max-width: 700px) { #app { height:auto;min-height:100vh;overflow:auto } #workspace { display:block;overflow:visible } #rail { border-right:0;border-bottom:1px solid var(--border) } #trace,#review-panel { max-height:none;overflow:visible } .trace-inner { padding:16px } .sf-row { grid-template-columns:1fr } #topbar .portfolio { display:none } .land-inner{padding:28px 16px}.scaffold-grid{grid-template-columns:1fr}.composer-foot{align-items:flex-start}.sources-pill{width:100%}.workflow{grid-template-columns:1fr}.workflow-step{border-right:0}.scope-row{grid-template-columns:1fr;gap:3px} }
+@media (max-width: 850px) { #landing{background:var(--bg)}.landing-grid{grid-template-columns:1fr;gap:24px}.land-inner{padding:22px;max-width:680px}.land-inner h1{font-size:36px;max-width:none}.land-lead{margin-bottom:12px}.entry-panel{box-shadow:var(--shadow-md)}.composer textarea{min-height:130px}.help-steps{grid-template-columns:1fr 1fr}.help-step:nth-child(2){border-right:0}.help-step{border-bottom:1px solid var(--border)} }
+@media (max-width: 700px) { #app { height:100vh;overflow:hidden } #workspace { display:block;overflow:auto } #rail { border-right:0;border-bottom:1px solid var(--border) } #trace,#review-panel { max-height:none;overflow:visible } .trace-inner { padding:16px } .sf-row { grid-template-columns:1fr } #topbar .portfolio { display:none }.land-inner{padding:16px}.land-inner h1{font-size:30px}.land-lead{font-size:14px;line-height:1.5}.land-boundary{display:none}.entry-head{padding:14px 16px 10px}.composer textarea{padding:14px 16px;min-height:112px;font-size:14px}.coverage-note{display:none}.help-grid,.help-steps{grid-template-columns:1fr}.help-step{border-right:0}.help-body{padding:16px}.help-head{padding:16px} }
 </style>
 </head>
 <body>
@@ -287,6 +280,7 @@ details.raw summary { cursor: pointer; }
   <span class="portfolio">Life Sciences Agents portfolio</span>
   <span id="run-title" style="font-size:14px;color:var(--mute)"></span>
   <span class="sep"></span>
+  <button class="help-btn" id="help-btn" type="button">Help</button>
   <span class="badge"><span class="dot"></span>Agent ready</span>
 </header>
 
@@ -298,24 +292,7 @@ details.raw summary { cursor: pointer; }
         <p class="overline">Evidence-grounded design review</p>
         <h1>Review a protocol design against evidence.</h1>
         <p class="land-lead">Provide an existing study concept, synopsis or protocol excerpt. The agent identifies the stated design choices, checks them against public trial and literature evidence, and returns cited findings for expert review.</p>
-        <div class="scope-summary" aria-label="Agent purpose">
-          <div class="scope-row"><b>You provide</b><span>An existing study concept, synopsis or protocol section that contains design decisions to review.</span></div>
-          <div class="scope-row"><b>Agent checks</b><span>Whether the stated population, intervention, comparator, endpoint, enrollment and duration have support in retrieved public evidence.</span></div>
-          <div class="scope-row"><b>You receive</b><span>Cited findings, comparable trials, evidence gaps, a reproducible search record and questions for specialist reviewers.</span></div>
-          <div class="scope-row boundary"><b>Not included</b><span>The agent does not write a new protocol, choose the design for you, or provide regulatory approval.</span></div>
-        </div>
-        <div class="design-scaffold">
-          <h2>What the agent reviews</h2>
-          <p>It evaluates what is present and marks missing or uncertain details as review gaps. It does not create or approve a protocol.</p>
-          <div class="scaffold-grid">
-            <div class="scaffold-item"><b>Population</b><span>Condition, disease setting and prior treatment</span></div>
-            <div class="scaffold-item"><b>Intervention</b><span>Drug, modality or mechanism being tested</span></div>
-            <div class="scaffold-item"><b>Comparator</b><span>Control arm, standard of care or single-arm rationale</span></div>
-            <div class="scaffold-item"><b>Primary endpoint</b><span>The principal outcome and measurement timeframe</span></div>
-            <div class="scaffold-item"><b>Enrollment</b><span>Proposed participant count, if known</span></div>
-            <div class="scaffold-item"><b>Duration</b><span>Treatment and follow-up period</span></div>
-          </div>
-        </div>
+        <p class="land-boundary"><b>Review only.</b> The agent does not write a new protocol, choose the design for you, or provide regulatory approval.</p>
       </div>
       <div class="entry-panel">
         <div class="entry-head"><h2>Paste the study design to review</h2><p>A synopsis, protocol section or plain-language study concept can be incomplete.</p></div>
@@ -338,15 +315,25 @@ details.raw summary { cursor: pointer; }
         </div>
       </div>
     </div>
-    <div class="workflow" aria-label="Agent workflow">
-      <div class="workflow-step"><div class="number">01 · READ</div><h3>Extract what the protocol states</h3><p>The agent identifies each design choice and retains the source wording so you can verify its interpretation.</p></div>
-      <div class="workflow-step"><div class="number">02 · CLARIFY</div><h3>Ask only about material gaps</h3><p>If a required detail is missing, the agent asks one focused question. Unknowns remain visible if you skip them.</p></div>
-      <div class="workflow-step"><div class="number">03 · RESEARCH</div><h3>Find public precedent</h3><p>It searches live trial and literature sources, records exact queries and retains traceable source records.</p></div>
-      <div class="workflow-step"><div class="number">04 · REVIEW</div><h3>Return a checkable assessment</h3><p>Findings link to evidence and separate direct precedent, indirect support, inference and evidence gaps.</p></div>
-    </div>
-    <p class="deliverable"><b>Decision support:</b> outputs require qualified clinical, statistical, regulatory and operational review.</p>
   </div>
 </section>
+
+<dialog class="help-dialog" id="help-dialog" aria-labelledby="help-title">
+  <div class="help-head"><div><h2 id="help-title">How the review works</h2><p>Use this agent to assess an existing protocol design against retrievable public evidence.</p></div><button class="help-close" id="help-close" type="button">Close</button></div>
+  <div class="help-body">
+    <section class="help-section"><h3>What the agent reviews</h3><div class="help-grid">
+      <div class="help-item"><b>Population</b><span>Condition, disease setting and prior treatment</span></div><div class="help-item"><b>Intervention</b><span>Drug, modality or mechanism being tested</span></div>
+      <div class="help-item"><b>Comparator</b><span>Control arm, standard of care or single-arm rationale</span></div><div class="help-item"><b>Primary endpoint</b><span>Principal outcome and measurement timeframe</span></div>
+      <div class="help-item"><b>Enrollment</b><span>Proposed participant count, if known</span></div><div class="help-item"><b>Duration</b><span>Treatment and follow-up period</span></div>
+    </div></section>
+    <section class="help-section"><h3>Workflow</h3><div class="help-steps">
+      <div class="help-step"><b>01 · READ</b><span>Extract stated design choices and retain their source wording.</span></div><div class="help-step"><b>02 · CLARIFY</b><span>Ask only about missing details that affect the review.</span></div>
+      <div class="help-step"><b>03 · RESEARCH</b><span>Search live public trial and literature sources.</span></div><div class="help-step"><b>04 · REVIEW</b><span>Return cited findings, gaps and specialist questions.</span></div>
+    </div></section>
+    <section class="help-section"><h3>What you receive</h3><div class="help-item"><span>A cited summary, design findings, comparable trials, evidence passages, exact search records and a PDF export containing the summary and citations.</span></div></section>
+    <div class="help-note"><b>Decision support only.</b> The agent does not create or approve a protocol. Outputs require qualified clinical, statistical, regulatory and operational review. ClinicalTrials.gov and PubMed are live; other source families shown in the app are planned integrations.</div>
+  </div>
+</dialog>
 
 <!-- WORKSPACE -->
 <div id="workspace" hidden>

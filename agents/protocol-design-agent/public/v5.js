@@ -334,6 +334,9 @@ async function start(text) {
 document.querySelectorAll(".rp-tab").forEach((tab) => { tab.onclick = () => selectPane(tab.dataset.pane); });
 $("start-btn").onclick = () => { const text = $("txt").value.trim(); if (text) start(text); else $("txt").focus(); };
 $("ex-btn").onclick = () => { $("txt").value = EXAMPLE; $("txt").focus(); };
+$("help-btn").onclick = () => $("help-dialog").showModal();
+$("help-close").onclick = () => $("help-dialog").close();
+$("help-dialog").onclick = (event) => { if (event.target === $("help-dialog")) $("help-dialog").close(); };
 $("calc-btn").onclick = () => {
   const p0 = Number($("p0").value), p1 = Number($("p1").value), alpha = Number($("alpha").value), power = Number($("power").value);
   if (!(p0 > 0 && p0 < 1 && p1 > 0 && p1 < 1 && p0 !== p1 && alpha > 0 && alpha < 1 && power > .5 && power < 1)) { $("calc-result").textContent = "Enter valid probabilities."; return; }

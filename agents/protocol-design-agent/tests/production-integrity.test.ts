@@ -27,13 +27,15 @@ test("landing page makes only supported product and source claims", async () => 
   assert.match(html, /ClinicalTrials\.gov · live/);
   assert.match(html, /PubMed · live/);
   assert.match(html, /EU CTIS · planned/);
-  assert.match(html, /It does not create or approve a protocol/);
+  assert.match(html, /does not create or approve a protocol/);
   assert.match(html, /does not write a new protocol, choose the design for you, or provide regulatory approval/);
-  assert.match(html, /You provide/);
-  assert.match(html, /Agent checks/);
-  assert.match(html, /You receive/);
+  assert.match(html, /What the agent reviews/);
+  assert.match(html, /What you receive/);
   assert.match(html, /Run design review/);
-  assert.match(html, /Decision support:.*qualified clinical, statistical, regulatory and operational review/s);
+  assert.match(html, /Decision support only.*qualified clinical, statistical, regulatory and operational review/s);
+  assert.match(html, /id="help-btn"/);
+  assert.match(html, /id="help-dialog"/);
+  assert.match(html, /#landing \{[^}]*overflow:hidden/s);
 });
 
 test("production client contains no embedded trial records, publications, counts, timestamps or relevance scores", async () => {
