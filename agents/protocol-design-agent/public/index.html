@@ -11,6 +11,7 @@
 *{box-sizing:border-box}[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
 header{display:flex;justify-content:space-between;align-items:center;padding:16px 36px;background:var(--card);border-bottom:1px solid var(--line);font-weight:600}
+.brand{display:flex;align-items:center;gap:12px}.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--ink);color:#fff;font-size:15px;font-weight:700}.brand-name{display:block;line-height:1.15}.brand-suite{display:block;color:var(--faint);font-size:12px;font-weight:500;line-height:1.2;margin-top:3px}.eyebrow{margin:0 0 12px;color:var(--blue);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.value-list{display:grid;gap:10px;margin:16px 0 22px}.value-item{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--mute)}.value-item b{color:var(--ink);display:block}.value-icon{display:grid;place-items:center;width:25px;height:25px;flex:none;border-radius:50%;background:var(--tealbg);color:var(--teal);font-size:13px;font-weight:700}.aside-title{margin:0 0 4px;font-weight:700;font-size:19px}.source-title{margin:20px 0 3px;padding-top:16px;border-top:1px solid var(--line);font-weight:700;font-size:16px}
 .live{font-weight:400;font-size:15px;color:var(--mute);display:flex;gap:9px;align-items:center}.live i{width:9px;height:9px;border-radius:50%;background:var(--teal)}
 main{max-width:1200px;margin:0 auto;padding:40px 28px 100px}
 h1{font-size:clamp(38px,5.6vw,68px);line-height:1.04;letter-spacing:-.025em;font-weight:700;margin:0 0 18px;max-width:14em}
@@ -84,18 +85,26 @@ mark{background:#fff0b3;color:inherit;border-radius:4px;padding:0 3px}
 .cred{margin-top:24px}.cred table{width:100%;border-collapse:collapse}.cred th,.cred td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.cred th{font-size:12px;text-transform:uppercase;color:var(--faint)}.proposed{background:var(--bluebg)}.audit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.audit-grid div,.limits{padding:12px;border:1px solid var(--line);border-radius:10px}.role-tabs,.exports,.calc{display:flex;gap:8px;flex-wrap:wrap}.role-tabs .active{background:var(--blue);color:white}.calc label{display:grid;gap:4px}.calc input{width:100px;padding:8px}.excluded{opacity:.45}.scroll{overflow:auto}.strength{font-weight:700}@media(max-width:600px){.audit-grid{grid-template-columns:1fr}}</style>
 </head>
 <body>
-<header><span>Life Sciences Agents</span><div class="head-tools"><span class="live"><i></i>Agent ready</span><button class="help" id="help" type="button" aria-label="How to use this app" title="How to use this app">?</button></div></header>
+<header><div class="brand"><span class="brand-mark">PD</span><span><span class="brand-name">Protocol Design Agent</span><span class="brand-suite">Life Sciences Agents portfolio</span></span></div><div class="head-tools"><span class="live"><i></i>Agent ready</span><button class="help" id="help" type="button" aria-label="How to use this app" title="How to use this app">?</button></div></header>
 <main>
 <section id="hero" class="hero">
 <div>
-<h1>Describe the study. I'll find the gaps.</h1>
-<p class="sub">Write it the way you'd explain it to a colleague. I'll work out what you mean, ask about what's missing, search the connected evidence sources, and show you where each conclusion comes from.</p>
+<p class="eyebrow">Evidence-grounded protocol review</p>
+<h1>Pressure-test your clinical trial design before the protocol is locked.</h1>
+<p class="sub">Describe a proposed study in plain language. The Protocol Design Agent identifies missing design choices, researches comparable trials and endpoint precedent, and returns a cited review for your clinical, statistical, regulatory and operations teams.</p>
 <div class="card comp">
-<textarea id="in" placeholder="A phase 2 trial of a PD-1 inhibitor in previously treated lung cancer…" aria-label="Describe your study"></textarea>
-<div class="bar"><span><button class="link" id="ex">Try an example</button></span><button class="go" id="go">Start review</button></div>
+<textarea id="in" placeholder="Describe the phase, population, intervention, endpoint, comparator, enrollment and duration…" aria-label="Describe your proposed clinical study"></textarea>
+<div class="bar"><span><button class="link" id="ex">Try an example study</button></span><button class="go" id="go">Review protocol design</button></div>
 </div>
 </div>
-<aside class="card"><p style="margin:0 0 6px;font-weight:700;font-size:19px">Where I look</p><p class="src" style="margin:0 0 8px">Live sources are searched on every run. Additional source families are planned.</p>
+<aside class="card"><p class="aside-title">What this agent gives you</p><p class="src" style="margin:0">A reviewable design brief, not a generated protocol.</p>
+<div class="value-list">
+<div class="value-item"><span class="value-icon">1</span><span><b>Design gaps</b>Missing or weakly justified endpoints, comparators, enrollment assumptions and duration.</span></div>
+<div class="value-item"><span class="value-icon">2</span><span><b>Comparable-trial benchmark</b>Your proposal placed beside retrieved trials, with direct links to the records.</span></div>
+<div class="value-item"><span class="value-icon">3</span><span><b>Expert review questions</b>Challenges a statistician, regulator, clinical scientist, operator or ethics reviewer may raise.</span></div>
+<div class="value-item"><span class="value-icon">4</span><span><b>Traceable evidence</b>Claim-level citations, search history, assumptions, limitations and exportable results.</span></div>
+</div>
+<p class="source-title">Evidence coverage</p><p class="src" style="margin:0 0 8px">Live sources are searched on every run. Additional source families are planned.</p>
 <div class="fam"><b>ClinicalTrials.gov</b><span class="tag t-Regulatory">Live</span></div>
 <div class="fam"><b>EU CTIS and WHO ICTRP</b><span class="tag t-Guideline">Planned</span></div>
 <div class="fam"><b>PubMed</b><span class="tag t-Regulatory">Live</span></div>
