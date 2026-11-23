@@ -216,7 +216,7 @@ async function start(text) {
   const currentRun = ++runId;
   originalText = text;
   fields = {};
-  $("landing").hidden = true; $("workspace").hidden = false; $("workspace").classList.remove("review-mode"); $("log").innerHTML = '<div class="trace-empty" id="trace-empty"><div class="te-icon">⚡</div><div>Agent trace will appear here</div></div>';
+  $("landing").hidden = true; $("workspace").hidden = false; $("workspace").classList.remove("review-mode"); $("log").innerHTML = '<div class="trace-empty" id="trace-empty"><div class="te-icon" aria-hidden="true">ACT</div><div>Agent trace will appear here</div></div>';
   $("c-src").textContent = "0"; $("c-scr").textContent = "0"; $("c-kep").textContent = "0"; $("c-el").textContent = "0.0s";
   $("rp-main").hidden = true; $("rp-empty").hidden = false; $("review-panel").classList.add("empty");
   setStage(0); renderFields(); startClock();
