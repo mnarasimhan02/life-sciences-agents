@@ -52,7 +52,6 @@ export type EvidenceSource = {
   passage: string;
   url: string;
   identifier: string;
-  relevance: number;
 };
 
 export type DesignCheck = {
