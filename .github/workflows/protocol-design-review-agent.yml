@@ -1,0 +1,41 @@
+name: Protocol Design Review Agent
+
+on:
+  pull_request:
+    paths:
+      - "agents/protocol-design-agent/**"
+      - ".github/workflows/protocol-design-review-agent.yml"
+  push:
+    branches: [main]
+    paths:
+      - "agents/protocol-design-agent/**"
+      - ".github/workflows/protocol-design-review-agent.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agents/protocol-design-agent
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: npm
+          cache-dependency-path: agents/protocol-design-agent/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run deterministic tests
+        run: npm test
