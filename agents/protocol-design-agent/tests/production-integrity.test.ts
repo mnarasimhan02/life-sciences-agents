@@ -12,6 +12,26 @@ test("production page loads only the live v5 client", async () => {
   assert.deepEqual(scripts, ["/v5.js"]);
 });
 
+test("landing page makes only supported product and source claims", async () => {
+  const html = await readFile(new URL("../public/index.html", import.meta.url), "utf8");
+  const unsupported = [
+    /\b78%\b/,
+    /\b74\s*sec(?:onds?)?\b/i,
+    /\b94%\b/,
+    /\b6\s+(?:connected\s+)?databases?\b/i,
+    /\bunder\s+2\s+minutes\b/i,
+    /⚡|📋|🔬|📊|🛡|🧪/u,
+  ];
+  for (const pattern of unsupported) assert.doesNotMatch(html, pattern);
+  assert.match(html, /Protocol Design Review Agent/);
+  assert.match(html, /ClinicalTrials\.gov · live/);
+  assert.match(html, /PubMed · live/);
+  assert.match(html, /EU CTIS · planned/);
+  assert.match(html, /It does not create or approve a protocol/);
+  assert.match(html, /Run design review/);
+  assert.match(html, /Decision support:.*qualified clinical, statistical, regulatory and operational review/s);
+});
+
 test("production client contains no embedded trial records, publications, counts, timestamps or relevance scores", async () => {
   const client = await readFile(new URL("../public/v5.js", import.meta.url), "utf8");
   const forbidden = [
