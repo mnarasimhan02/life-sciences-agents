@@ -53,6 +53,10 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 .overline { color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:14px }
 .land-inner h1 { font-size:clamp(38px,4.3vw,58px);font-weight:700;line-height:1.06;letter-spacing:-.045em;margin-bottom:18px;max-width:10ch }
 .land-lead { color:var(--mute);font-size:17px;line-height:1.7;max-width:46ch;margin-bottom:32px }
+.scope-summary { background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:0 0 28px;overflow:hidden }
+.scope-row { display:grid;grid-template-columns:92px 1fr;gap:12px;padding:11px 13px;border-bottom:1px solid var(--border-soft);font-size:12.5px;line-height:1.5 }
+.scope-row:last-child { border-bottom:0 }.scope-row b { color:var(--ink);font-size:11px;letter-spacing:.04em;text-transform:uppercase }.scope-row span { color:var(--mute) }
+.scope-row.boundary { background:var(--amber-bg) }.scope-row.boundary b,.scope-row.boundary span { color:#92400e }
 .design-scaffold { border-top:1px solid var(--border);padding-top:22px }
 .design-scaffold h2 { font-size:14px;margin-bottom:5px }
 .design-scaffold>p { color:var(--mute);font-size:13px;margin-bottom:15px }
@@ -80,7 +84,7 @@ button:hover { border-color: #adb5bd; }
 .btn-ghost { border: 0; background: 0; color: var(--accent); padding: 7px 4px; }
 .coverage-note { padding:14px 20px;background:#fafbfc;border-top:1px solid var(--border-soft) }
 .coverage-note h3 { font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-bottom:8px }
-.workflow { display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:44px;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden }
+.workflow { display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:44px;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden }
 .workflow-step { padding:20px 22px;border-right:1px solid var(--border) }.workflow-step:last-child{border:0}
 .workflow-step .number { color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:9px }
 .workflow-step h3 { font-size:14px;margin-bottom:5px }.workflow-step p { color:var(--mute);font-size:12px;line-height:1.55 }
@@ -270,8 +274,8 @@ details.raw summary { cursor: pointer; }
 @keyframes blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media (max-width: 1050px) { #workspace { grid-template-columns: 230px minmax(0,1fr); } .rp-pane { padding:22px 24px 40px } }
-@media (max-width: 850px) { #landing{background:var(--bg)} .landing-grid{grid-template-columns:1fr;gap:34px}.land-inner{padding-top:36px}.land-inner h1{max-width:14ch}.entry-panel{box-shadow:var(--shadow-md)}.workflow{grid-template-columns:1fr}.workflow-step{border-right:0;border-bottom:1px solid var(--border)} }
-@media (max-width: 700px) { #app { height:auto;min-height:100vh;overflow:auto } #workspace { display:block;overflow:visible } #rail { border-right:0;border-bottom:1px solid var(--border) } #trace,#review-panel { max-height:none;overflow:visible } .trace-inner { padding:16px } .sf-row { grid-template-columns:1fr } #topbar .portfolio { display:none } .land-inner{padding:28px 16px}.scaffold-grid{grid-template-columns:1fr}.composer-foot{align-items:flex-start}.sources-pill{width:100%} }
+@media (max-width: 850px) { #landing{background:var(--bg)} .landing-grid{grid-template-columns:1fr;gap:34px}.land-inner{padding-top:36px}.land-inner h1{max-width:14ch}.entry-panel{box-shadow:var(--shadow-md)}.workflow{grid-template-columns:1fr 1fr}.workflow-step:nth-child(2){border-right:0}.workflow-step{border-bottom:1px solid var(--border)} }
+@media (max-width: 700px) { #app { height:auto;min-height:100vh;overflow:auto } #workspace { display:block;overflow:visible } #rail { border-right:0;border-bottom:1px solid var(--border) } #trace,#review-panel { max-height:none;overflow:visible } .trace-inner { padding:16px } .sf-row { grid-template-columns:1fr } #topbar .portfolio { display:none } .land-inner{padding:28px 16px}.scaffold-grid{grid-template-columns:1fr}.composer-foot{align-items:flex-start}.sources-pill{width:100%}.workflow{grid-template-columns:1fr}.workflow-step{border-right:0}.scope-row{grid-template-columns:1fr;gap:3px} }
 </style>
 </head>
 <body>
@@ -294,6 +298,12 @@ details.raw summary { cursor: pointer; }
         <p class="overline">Evidence-grounded design review</p>
         <h1>Review a protocol design against evidence.</h1>
         <p class="land-lead">Provide an existing study concept, synopsis or protocol excerpt. The agent identifies the stated design choices, checks them against public trial and literature evidence, and returns cited findings for expert review.</p>
+        <div class="scope-summary" aria-label="Agent purpose">
+          <div class="scope-row"><b>You provide</b><span>An existing study concept, synopsis or protocol section that contains design decisions to review.</span></div>
+          <div class="scope-row"><b>Agent checks</b><span>Whether the stated population, intervention, comparator, endpoint, enrollment and duration have support in retrieved public evidence.</span></div>
+          <div class="scope-row"><b>You receive</b><span>Cited findings, comparable trials, evidence gaps, a reproducible search record and questions for specialist reviewers.</span></div>
+          <div class="scope-row boundary"><b>Not included</b><span>The agent does not write a new protocol, choose the design for you, or provide regulatory approval.</span></div>
+        </div>
         <div class="design-scaffold">
           <h2>What the agent reviews</h2>
           <p>It evaluates what is present and marks missing or uncertain details as review gaps. It does not create or approve a protocol.</p>
@@ -329,9 +339,10 @@ details.raw summary { cursor: pointer; }
       </div>
     </div>
     <div class="workflow" aria-label="Agent workflow">
-      <div class="workflow-step"><div class="number">01 · EXTRACT</div><h3>Identify the stated design choices</h3><p>The agent identifies the population, intervention, endpoint, comparator, enrollment and duration, preserving the phrases it used.</p></div>
-      <div class="workflow-step"><div class="number">02 · RESEARCH</div><h3>Investigate public precedent</h3><p>It selects live evidence tools, searches comparable trials and endpoint literature, and records each query and result.</p></div>
-      <div class="workflow-step"><div class="number">03 · REVIEW</div><h3>Challenge the design choices</h3><p>You receive cited findings, a comparable-trial table, an evidence library, a search audit and questions for specialist review.</p></div>
+      <div class="workflow-step"><div class="number">01 · READ</div><h3>Extract what the protocol states</h3><p>The agent identifies each design choice and retains the source wording so you can verify its interpretation.</p></div>
+      <div class="workflow-step"><div class="number">02 · CLARIFY</div><h3>Ask only about material gaps</h3><p>If a required detail is missing, the agent asks one focused question. Unknowns remain visible if you skip them.</p></div>
+      <div class="workflow-step"><div class="number">03 · RESEARCH</div><h3>Find public precedent</h3><p>It searches live trial and literature sources, records exact queries and retains traceable source records.</p></div>
+      <div class="workflow-step"><div class="number">04 · REVIEW</div><h3>Return a checkable assessment</h3><p>Findings link to evidence and separate direct precedent, indirect support, inference and evidence gaps.</p></div>
     </div>
     <p class="deliverable"><b>Decision support:</b> outputs require qualified clinical, statistical, regulatory and operational review.</p>
   </div>
