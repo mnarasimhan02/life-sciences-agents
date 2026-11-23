@@ -87,11 +87,13 @@ Investigates what happened to a clinical trial and, separately, what happened to
 - Sends ambiguous asset or sponsor matches for human confirmation
 - Produces claim-level citations and a complete execution trace
 
-### 02 · Protocol Design Agent — in development
+### 02 · Protocol Design Review Agent — in development
 
 Reviews a structured study concept against public trial and literature evidence, then returns a reviewable design brief with explicit gaps and an execution trace.
 
 **Runnable implementation:** [agents/protocol-design-agent](agents/protocol-design-agent)
+
+**Release readiness:** [launch checklist](agents/protocol-design-agent/LAUNCH_CHECKLIST.md) · [evaluation plan](agents/protocol-design-agent/evals/EVALUATION_PLAN.md)
 
 **Available in the current runtime**
 
@@ -207,7 +209,7 @@ Every agent is expected to ship with a small public benchmark before it is marke
 - [x] Add a dynamic planner and bounded investigation loop
 - [ ] Publish the first 25-case Trial Evidence benchmark
 - [ ] Add claim-level citation verification and adversarial tests
-- [x] Add adaptive Protocol Design Agent with comparator and endpoint research
+- [x] Add adaptive Protocol Design Review Agent with comparator and endpoint research
 - [ ] Release Regulatory Precedent Agent
 - [ ] Publish a common CLI and Python API
 - [ ] Add resumable runs and human-approval checkpoints

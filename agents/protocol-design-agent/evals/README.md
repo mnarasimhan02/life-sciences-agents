@@ -21,3 +21,5 @@ Build 20–30 historical study-design cases reviewed by at least one qualified c
 5. **Reproducibility** — runs retaining queries, timestamps, source identifiers and evidence passages.
 
 `cases.example.json` is a schema-shaped starter, not a completed or validated benchmark. Do not publish performance numbers until cases are adjudicated.
+
+See [EVALUATION_PLAN.md](EVALUATION_PLAN.md) for dataset composition, adjudication requirements, metric definitions, citation and severity rubrics, release gates, and the report template.

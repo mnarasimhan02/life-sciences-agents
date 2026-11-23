@@ -1,72 +1,130 @@
-# Protocol Design Agent
+# Protocol Design Review Agent
 
-Protocol Design Agent reviews a structured study concept against public trial and literature evidence. It is a decision-support research agent, not an autonomous protocol author and not a substitute for clinical, statistical, regulatory, operational or patient review.
+An evidence-grounded agent that reviews an existing clinical study concept against public trial and literature evidence.
 
-## Goal
+The agent does **not** write a new protocol, choose a design for the study team, provide regulatory approval, or replace clinical, statistical, regulatory, operational, ethics, or patient review.
 
-Given a condition, phase and proposed design choices, the agent should determine:
+## What it does
 
-- Which public trials are genuinely useful comparators
-- Whether the proposed primary endpoint has visible precedent
-- Which alternative endpoints recur in the comparator set
-- How proposed enrollment compares with retrieved trials
-- Whether eligibility-rule count and visit frequency create operational questions
-- What cannot be assessed from the supplied concept and public evidence
+Given a study concept, synopsis, or protocol excerpt, the application:
 
-## Agent behavior
+1. extracts the stated population, phase, intervention, endpoint, comparator, enrollment, and duration;
+2. asks focused questions only when a material review field is missing;
+3. lets the model select and call live evidence tools;
+4. replans after sparse results or tool failure;
+5. returns cited findings, comparable trials, evidence gaps, exact search records, and reviewer questions; and
+6. exports the review summary and cited sources as a PDF.
 
-The execution path adapts to its observations:
+Current live sources are ClinicalTrials.gov API v2 and PubMed E-utilities. EU CTIS, FDA, EMA, and ICH integrations are identified as planned and are not counted as searched.
 
-1. Start with a focused condition + phase + intervention/mechanism search.
-2. If fewer than five unique comparators are found, broaden to condition + phase.
-3. If a primary endpoint is proposed, search PubMed for indication-specific endpoint evidence.
-4. If a tool fails, record the failure and replan rather than silently treating it as no evidence.
-5. Stop when the evidence paths are complete or the configured budget is exhausted.
+## Why this is a true agent
 
-Every plan, tool call, observation, replan and stop decision appears in the returned trace.
+This is not retrieval followed by a fixed summary. The OpenAI Agents SDK runs a bounded model → tool → observation loop:
 
-## Run
+- the model decides which available tool to call from the unresolved design questions;
+- focused results can cause the agent to broaden its search;
+- sparse evidence and tool failure change the next action;
+- run state retains the study concept, evidence, gaps, tool outcomes, and budgets;
+- completion occurs when evidence paths are resolved or a limit is reached; and
+- the final review is assembled from traceable source records and passages.
 
-Requires Node.js 22.13 or newer.
+Registered tools:
+
+- `search_comparable_trials` — focused or broadened ClinicalTrials.gov research
+- `search_endpoint_literature` — indication-specific PubMed research
+- `record_evidence_gap` — preserves unresolved questions instead of inventing an answer
+
+Application limits constrain turns, tool calls, elapsed time, and request size. Tool failures remain visible in the trace. The UI exposes concise decisions and tool events, not private model chain-of-thought.
+
+## Why not just ask Claude or ChatGPT?
+
+A direct chat can give a useful preliminary opinion, but a one-off conversation does not by itself guarantee this product's controls:
+
+| Direct chat | This application |
+| --- | --- |
+| The model may search or answer differently between sessions | The runtime exposes a defined set of typed evidence tools |
+| Source coverage and stopping behavior are conversational | Tool budgets, time limits, and stop conditions are enforced in code |
+| Citations may be links in generated prose | Claims point to retained NCT/PMID records and evidence passages |
+| Failures or empty sources may be easy to miss | Source failures and evidence gaps remain explicit in the run trace |
+| Reproduction depends on the conversation | Queries, timestamps, source IDs, passages, and tool outcomes are retained |
+| Quality is judged informally | Regression, live-source, model E2E, and expert-adjudicated evaluations are defined |
+| Output is a chat response | The review is a deployable workflow with structured UI and cited PDF export |
+
+Claude, Claude Agent SDK, or another capable model platform **could implement the same architecture**. The differentiation is not that Claude is incapable; it is the domain-specific evidence tools, controlled runtime, source-preserving review pipeline, tests, evaluations, and release discipline implemented in this repository. A fair comparison is therefore this application versus an unstructured chat request—not OpenAI versus Anthropic.
+
+## Quick start
+
+Requirements:
+
+- Node.js 22.13 or newer
+- an OpenAI API key for the web application
 
 ```bash
-npm install
-npm test
-npm run review -- examples/phase2-oncology.json
-```
-
-No API key is required. The current tools use ClinicalTrials.gov API v2 and PubMed E-utilities.
-
-## Run the web app
-
-The hosted application uses the OpenAI Agents SDK. The model independently selects tools, calls live ClinicalTrials.gov and PubMed APIs, observes results, replans and decides when to stop.
-
-```bash
+git clone https://github.com/mnarasimhan02/life-sciences-agents.git
+cd life-sciences-agents/agents/protocol-design-agent
+npm ci
 cp .env.example .env
-# Add OPENAI_API_KEY to .env for Agent mode.
-set -a && source .env && set +a
-npm start
 ```
 
-Open `http://localhost:3000`. Paste a synopsis, protocol paragraph or rough study idea. A separate extraction agent returns structured fields with exact supporting source quotes. The interface highlights what it found, asks one question at a time only for missing fields, and carries uncertain answers into the review as evidence gaps.
-
-After clarification, the research agent selects and runs the live evidence tools. The interface streams its decisions, tool calls, observations and replans before presenting the structured review. A follow-up box lets the user add or correct details and reruns extraction and research from the updated description.
-
-The review includes claim-level source buttons, a design-choice check for phase, endpoint, comparator, enrollment and duration, and an evidence library built from specific NCT and PMID records. PubMed abstracts and structured registry fields are preserved as the supporting passages. Only ClinicalTrials.gov and PubMed are currently labelled live; planned source families are not counted as searched.
-
-The interface streams the run as it happens: current status, concise model decision rationale, tool start, API observation, replanning, evidence gaps and stop condition. It does not expose private model chain-of-thought.
-
-## Deploy
-
-The included `Dockerfile` can be deployed to services such as Google Cloud Run, AWS App Runner, Azure Container Apps, Railway or Render. Configure these environment variables on the hosting platform:
+Set your server-side key in `.env`:
 
 ```text
-OPENAI_API_KEY=...
+OPENAI_API_KEY=your_key
 OPENAI_MODEL=gpt-5.4
 PORT=3000
 ```
 
-The OpenAI key remains server-side and is never sent to the browser. The public application requires the key because every run uses the model-directed agent runtime. The deterministic planner remains available only through the CLI and automated tests.
+Start the app:
+
+```bash
+set -a && source .env && set +a
+npm start
+```
+
+Open [http://localhost:3000](http://localhost:3000). The API key stays on the server and is never sent to the browser.
+
+## Try it
+
+Paste an existing study concept such as:
+
+> A randomized phase 2 study of a PD-1 inhibitor versus docetaxel in adults with previously treated advanced non-small cell lung cancer. The primary endpoint is progression-free survival. Planned enrollment is 180 participants with 52 weeks of follow-up.
+
+The review workspace separates the user-facing deliverable from the auditable agent activity. Citations open the supporting evidence record. The final PDF contains the summary, design findings, evidence gaps, and cited passages and URLs.
+
+## CLI without a model key
+
+The deterministic planner remains available for local development and regression testing:
+
+```bash
+npm run review -- examples/phase2-oncology.json
+```
+
+It uses the same public ClinicalTrials.gov and PubMed tools but is not the hosted model-directed runtime.
+
+## Verification
+
+```bash
+npm run typecheck
+npm test
+```
+
+Optional live integration checks:
+
+```bash
+npm run test:live-tools
+```
+
+Optional model-directed end-to-end test, which incurs API usage:
+
+```bash
+OPENAI_API_KEY=... npm run test:e2e:model
+```
+
+Test coverage includes adaptive search, sparse evidence, tool failure and replanning, budget exhaustion, invalid concepts, phase filtering, production data-integrity guards, and source traceability.
+
+Passing automated checks are not evidence of clinical validity. See [evals/README.md](evals/README.md) and [evals/EVALUATION_PLAN.md](evals/EVALUATION_PLAN.md).
+
+## API
 
 Health check:
 
@@ -76,88 +134,59 @@ GET /api/health
 
 Extract a free-text study description:
 
-```text
+```http
 POST /api/extract
 Content-Type: application/json
 
 {"text":"Planning a phase 2 trial of a PD-1 inhibitor in advanced NSCLC..."}
 ```
 
-Run an investigation:
+Stream a model-directed review as newline-delimited JSON:
 
-```text
-POST /api/review
-Content-Type: application/json
-
-{"concept":{"condition":"non-small cell lung cancer","phase":"Phase 2"}}
-```
-
-Stream a live investigation as newline-delimited JSON:
-
-```text
+```http
 POST /api/review/stream
 Content-Type: application/json
 
 {"concept":{"condition":"non-small cell lung cancer","phase":"Phase 2"}}
 ```
 
-Stream events include `status`, `trace`, `result` and `error`. The browser renders each event immediately while the agent is still running.
+Stream events include `status`, `trace`, `result`, and `error`.
 
-## Agent runtime
+## Deployment
 
-Agent mode is built with the OpenAI Agents SDK and registered function tools:
+The included `Dockerfile` can run on Cloud Run, AWS App Runner, Azure Container Apps, Railway, Render, or another Node-compatible container host.
 
-1. `search_comparable_trials` — focused or broadened ClinicalTrials.gov research
-2. `search_endpoint_literature` — indication-specific PubMed research
-3. `record_evidence_gap` — explicit preservation of unresolved questions
-
-The SDK runs the model → tool → observation loop. Application-level limits still enforce maximum turns, tool calls and elapsed time. The deterministic analyzer creates the final structured review from retrieved evidence so model prose cannot silently alter source records.
-
-## Input
-
-The CLI accepts a JSON study concept. Only `condition` and `phase` are required.
-
-```json
-{
-  "condition": "non-small cell lung cancer",
-  "phase": "Phase 2",
-  "intervention": "PD-1 inhibitor",
-  "population": "Adults with previously treated advanced NSCLC",
-  "primaryEndpoint": "objective response rate",
-  "comparator": "single-arm historical control",
-  "enrollmentTarget": 120,
-  "durationWeeks": 52,
-  "plannedVisitCount": 18,
-  "inclusionCriteria": ["Measurable disease"],
-  "exclusionCriteria": ["Active autoimmune disease"]
-}
+```bash
+docker build -t protocol-design-review-agent .
+docker run --rm -p 3000:3000 --env-file .env protocol-design-review-agent
 ```
 
-## Output
-
-- Endpoint-precedent assessment
-- Observed endpoint alternatives
-- Eligibility-complexity observations
-- Enrollment and visit-burden observations
-- Reviewable design options
-- Comparable trials and publications
-- Source coverage and evidence gaps
-- Budget consumption
-- Full execution trace
+Before making the service public, complete [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md). In particular, configure secrets, authentication, rate limits, logs, retention rules, monitoring, and an explicit clinical-use disclaimer.
 
 ## Evidence boundaries
 
-- Comparator frequency does not establish endpoint validity, regulatory acceptance or design suitability.
+- Comparator frequency does not establish endpoint validity, regulatory acceptance, or design suitability.
 - Registry data are sponsor-submitted and can be incomplete or outdated.
-- Eligibility-rule count is only an operational-complexity signal; it is not a recruitment forecast.
-- The agent does not calculate sample size, treatment effect or statistical power.
-- The output must be reviewed by qualified clinical, statistical, regulatory, operational and patient representatives.
+- PubMed abstracts are not a substitute for full-text critical appraisal.
+- Absence of retrieved public evidence is not evidence of absence.
+- The exploratory sample-size utility is not a validated statistical analysis.
+- The current system does not calculate a final treatment effect, power analysis, or regulatory strategy.
+- Every consequential conclusion requires qualified human review.
 
-## Next milestones
+## Repository map
 
-1. Structured comparator ranking with explicit inclusion and rejection reasons
-2. Endpoint ontology and synonym normalization
-3. Published result extraction rather than citation metadata only
-4. Schedule-of-activities and patient-burden analysis
-5. Statistical and regulatory human-approval gates
-6. An adjudicated design-review evaluation set
+```text
+protocol-design-agent/
+├── public/                 # Single-screen app and cited review workspace
+├── src/                    # Agent, planner, analyzer, server, and live tools
+├── tests/                  # Unit, production-integrity, live, and model E2E tests
+├── evals/                  # Evaluation plan and adjudication starter set
+├── examples/               # Reproducible study concepts
+├── LAUNCH_CHECKLIST.md     # Pre-public-release controls
+├── Dockerfile
+└── README.md
+```
+
+## Status
+
+This project is in active development. No clinical-performance, citation-entailment, or issue-recall score is claimed yet. Those results will be published only after the evaluation cases are expert-adjudicated.
