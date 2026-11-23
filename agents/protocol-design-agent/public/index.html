@@ -67,7 +67,7 @@ button:hover { border-color: #adb5bd; }
 .btn-ghost { border: 0; background: 0; color: var(--accent); padding: 7px 4px; }
 
 /* ── WORKSPACE ── */
-#workspace { flex: 1; display: grid; grid-template-columns: 260px 1fr 340px; overflow: hidden; }
+#workspace { flex: 1; display: grid; grid-template-columns: 260px minmax(0,1fr); overflow: hidden; }
 
 /* LEFT RAIL */
 #rail { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
@@ -153,7 +153,9 @@ details.raw summary { cursor: pointer; }
 .cur { display: inline-block; width: 2px; height: 1em; background: var(--accent); vertical-align: -1px; animation: blink 1s steps(2) infinite; margin-left: 1px; }
 
 /* RIGHT PANEL: REVIEW */
-#review-panel { background: var(--surface); border-left: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
+#review-panel { background: var(--surface); overflow-y: auto; display: none; flex-direction: column; min-width:0; }
+#workspace.review-mode #trace { display:none; }
+#workspace.review-mode #review-panel { display:flex; }
 #review-panel.empty { align-items: center; justify-content: center; }
 .rp-empty { text-align: center; color: var(--faint); font-size: 14px; padding: 40px 24px; }
 .rp-empty .rpe-icon { font-size: 32px; margin-bottom: 8px; }
@@ -163,8 +165,10 @@ details.raw summary { cursor: pointer; }
 .rp-tab { flex: 1; padding: 11px 8px; font-size: 13px; font-weight: 500; color: var(--mute); border: 0; background: 0; border-bottom: 2px solid transparent; cursor: pointer; }
 .rp-tab.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 .rp-content { flex: 1; overflow-y: auto; }
-.rp-pane { display: none; padding: 18px 20px; }
+.rp-pane { display: none; padding: 28px 34px 48px; max-width:1180px; width:100%; margin:0 auto; }
 .rp-pane.on { display: block; }
+#p-activity { max-width:900px; }
+#p-activity .trace-inner { padding:0; }
 
 /* Bottom line */
 .bottom-line { background: linear-gradient(135deg, var(--accent-bg) 0%, var(--surface) 100%); border: 1px solid #bfdbfe; border-radius: var(--radius); padding: 14px 16px; margin-bottom: 18px; font-size: 15px; font-weight: 500; line-height: 1.6; }
@@ -245,7 +249,7 @@ details.raw summary { cursor: pointer; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
-@media (max-width: 1050px) { #workspace { grid-template-columns: 230px minmax(380px,1fr); } #review-panel { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--border); max-height: 55vh; } #workspace { overflow-y: auto; } }
+@media (max-width: 1050px) { #workspace { grid-template-columns: 230px minmax(0,1fr); } .rp-pane { padding:22px 24px 40px } }
 @media (max-width: 700px) { #app { height:auto;min-height:100vh;overflow:auto } #workspace { display:block;overflow:visible } #rail { border-right:0;border-bottom:1px solid var(--border) } #trace,#review-panel { max-height:none;overflow:visible } .trace-inner { padding:16px } .sf-row { grid-template-columns:1fr } #topbar .portfolio { display:none } }
 </style>
 </head>
@@ -330,6 +334,7 @@ details.raw summary { cursor: pointer; }
         <button class="rp-tab" data-pane="p-bench" role="tab">Benchmark</button>
         <button class="rp-tab" data-pane="p-evidence" role="tab">Evidence</button>
         <button class="rp-tab" data-pane="p-flow" role="tab">Search</button>
+        <button class="rp-tab" data-pane="p-activity" role="tab">Activity</button>
       </div>
       <div class="rp-content" id="rp-content">
 
@@ -395,6 +400,13 @@ details.raw summary { cursor: pointer; }
             <div id="sf-rows"></div>
           </div>
           <div style="margin-top:16px;font-size:12px;color:var(--faint)" id="sf-note"></div>
+        </div>
+
+        <!-- AUDITABLE AGENT ACTIVITY -->
+        <div class="rp-pane" id="p-activity">
+          <div class="rp-h">Agent activity <span>Decisions, tool calls and observations</span></div>
+          <p style="font-size:13px;color:var(--mute);margin-bottom:18px">The activity log is retained for auditability. It is secondary to the review deliverable.</p>
+          <div id="activity-log"></div>
         </div>
 
       </div>
