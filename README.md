@@ -4,7 +4,7 @@
 
 [![Status](https://img.shields.io/badge/status-building-5b5bd6)](#roadmap)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
-[![Agents](https://img.shields.io/badge/agents-1%20in%20development-0f766e)](#agents)
+[![Agents](https://img.shields.io/badge/agents-2%20in%20development-0f766e)](#agents)
 [![Evidence](https://img.shields.io/badge/evidence-source--traceable-7c3aed)](#the-agent-standard)
 
 Life Sciences Agents is a growing collection of practical agents that investigate, reason, verify, and act across the life-sciences development lifecycle.
@@ -87,13 +87,24 @@ Investigates what happened to a clinical trial and, separately, what happened to
 - Sends ambiguous asset or sponsor matches for human confirmation
 - Produces claim-level citations and a complete execution trace
 
-### 02 · Regulatory Precedent Agent — planned
+### 02 · Protocol Design Agent — in development
+
+Reviews a structured study concept against public trial and literature evidence, then returns a reviewable design brief with explicit gaps and an execution trace.
+
+**Runnable implementation:** [agents/protocol-design-agent](agents/protocol-design-agent)
+
+**Available in the current runtime**
+
+- Focused and broadened ClinicalTrials.gov comparator searches
+- Deterministic phase filtering
+- Condition-endpoint PubMed research
+- Endpoint precedent, eligibility complexity, enrollment, and visit-burden assessment
+- Adaptive replanning after sparse results or tool failure
+- Step and tool-call budgets, evidence gaps, and a complete execution trace
+
+### 03 · Regulatory Precedent Agent — planned
 
 Builds a cited precedent matrix for an asset, indication, endpoint, population, or regulatory question. It searches relevant approvals and guidance, tests whether each precedent is genuinely comparable, and records why candidates were included or rejected.
-
-### 03 · Protocol Feasibility Agent — planned
-
-Explores comparable studies, eligibility patterns, endpoint precedent, operational burden, and evidence gaps before producing a reviewable study-concept brief.
 
 ### 04 · Safety Signal Scout — planned
 
@@ -196,6 +207,7 @@ Every agent is expected to ship with a small public benchmark before it is marke
 - [x] Add a dynamic planner and bounded investigation loop
 - [ ] Publish the first 25-case Trial Evidence benchmark
 - [ ] Add claim-level citation verification and adversarial tests
+- [x] Add adaptive Protocol Design Agent with comparator and endpoint research
 - [ ] Release Regulatory Precedent Agent
 - [ ] Publish a common CLI and Python API
 - [ ] Add resumable runs and human-approval checkpoints
@@ -212,6 +224,15 @@ cd agents/trial-evidence-agent
 npm install
 npm test
 npm run investigate -- NCT02569398
+```
+
+Run Agent 02 with a structured study concept:
+
+```bash
+cd ../protocol-design-agent
+npm install
+npm test
+npm run review -- examples/phase2-oncology.json
 ```
 
 ## Principles

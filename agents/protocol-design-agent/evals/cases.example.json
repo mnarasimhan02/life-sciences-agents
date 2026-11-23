@@ -1,0 +1,28 @@
+{
+  "version": "0.1",
+  "status": "needs-expert-adjudication",
+  "cases": [
+    {
+      "id": "example-phase2-oncology",
+      "input": {
+        "condition": "non-small cell lung cancer",
+        "phase": "Phase 2",
+        "intervention": "PD-1 inhibitor",
+        "primaryEndpoint": "objective response rate",
+        "comparator": "single-arm historical control",
+        "enrollmentTarget": 120,
+        "durationWeeks": 52
+      },
+      "knownIssues": [],
+      "mustNotClaim": [
+        "Regulatory acceptance based only on registry frequency",
+        "A validated sample size without statistical review"
+      ],
+      "adjudication": {
+        "status": "pending",
+        "reviewerRole": null,
+        "date": null
+      }
+    }
+  ]
+}

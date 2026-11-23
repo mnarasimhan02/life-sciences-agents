@@ -1,0 +1,22 @@
+{
+  "condition": "non-small cell lung cancer",
+  "phase": "Phase 2",
+  "intervention": "PD-1 inhibitor",
+  "population": "Adults with previously treated advanced NSCLC",
+  "primaryEndpoint": "objective response rate",
+  "comparator": "single-arm historical control",
+  "enrollmentTarget": 120,
+  "durationWeeks": 52,
+  "plannedVisitCount": 18,
+  "inclusionCriteria": [
+    "Histologically confirmed advanced NSCLC",
+    "At least one measurable lesion",
+    "ECOG performance status 0 or 1",
+    "Adequate organ function"
+  ],
+  "exclusionCriteria": [
+    "Active autoimmune disease requiring systemic therapy",
+    "Untreated central nervous system metastases",
+    "Prior therapy targeting the same pathway"
+  ]
+}
